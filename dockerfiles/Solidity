@@ -1,0 +1,24 @@
+# IMPORTANT: use LTS versions
+FROM node:18
+LABEL authors="agu"
+
+# Install git
+RUN apt-get update && apt-get install -y git
+
+# Set the working directory to /app
+WORKDIR /app
+
+COPY . .
+
+# Clone the private repository which contains the test cases
+RUN git clone -b master https://github.com/samueloh99/script-solidity ./script-solidity
+
+# Set the working directory to the cloned repository
+WORKDIR /app/script-solidity
+
+# Install dependencies using npm
+RUN npm install
+
+# Execute tests for first time so it set up some cache. Use "> /dev/null" to ignore error messages.
+# Do an "echo" in order to ignore exit code 1 because tests will fail
+RUN npx hardhat test > /dev/null; echo ""
