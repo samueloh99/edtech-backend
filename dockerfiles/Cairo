@@ -1,0 +1,23 @@
+# IMPORTANT: use LTS versions
+FROM node:18
+LABEL authors="agu"
+
+# Install git and curl
+RUN apt-get update && apt-get install -y git curl
+
+# Install Scarb
+RUN curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh || true
+
+# Manually add Scarb to PATH
+ENV PATH="/root/.local/bin:${PATH}"
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Clone the private repository which contains the test cases
+RUN git clone -b main https://github.com/samueloh99/script-cairo ./script-cairo
+
+# Set the working directory to the cloned repository
+WORKDIR /app/script-cairo
+
+RUN scarb test > /dev/null; echo ""
